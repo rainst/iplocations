@@ -1,0 +1,27 @@
+@import url("./reset.css");
+
+body {
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif, monospace;
+  color: #c9d1d9;
+  /* background-color: #171724; */
+  background-color: #0d1117;
+  /* font-size: xx-large; */
+}
+
+input {
+  background-color: #151b24;
+  border: 1px solid #c9d1d9;
+  border-radius: 5px;
+  margin: 0;
+  padding: 5px 8px;
+  color: inherit;
+  font-size: 1.2rem;
+  display: block;
+}
+
+a {
+  text-decoration: none;
+  color: burlywood;
+  margin: 0 1rem;
+}

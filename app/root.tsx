@@ -7,12 +7,18 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
+import Nav from "./components/Nav";
+import styles from "./css/index.css";
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
   title: "IP Locations",
   viewport: "width=device-width,initial-scale=1",
 });
+
+export const links = () => {
+  return [{ rel: "stylesheet", href: styles }];
+};
 
 export default function App() {
   return (
@@ -22,6 +28,7 @@ export default function App() {
         <Links />
       </head>
       <body>
+        <Nav />
         <Outlet />
         <ScrollRestoration />
         <Scripts />

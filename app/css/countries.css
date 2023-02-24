@@ -1,0 +1,31 @@
+.countries {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  max-height: 500px;
+}
+
+.country {
+  background-color: #0f1c31;
+  margin: 5px;
+  padding: 10px 10px;
+  width: auto;
+  cursor: pointer;
+  opacity: 0.8;
+  border-radius: 5px;
+  line-height: 1;
+}
+
+.country:hover {
+  opacity: 1;
+}
+.country.selected {
+  background-color: #0f2445;
+  opacity: 1;
+}
+
+input {
+  width: 100%;
+  margin: 1rem;
+  box-sizing: content-box;
+}
