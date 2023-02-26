@@ -27,7 +27,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body style={{ display: "flex", flexDirection: "column" }}>
         <Nav />
         <Outlet />
         <ScrollRestoration />
