@@ -22,8 +22,7 @@ export interface MapState {
   zoom?: number;
 }
 
-const mapStateKey = "mapState";
-// const initMarkersVisible = true;
+const mapStateLocalStorageKey = "mapState";
 
 const GoogleMap = ({ apiKey, locations }: Props) => {
   const [mapState, setMapState] = React.useState<MapState>();
@@ -52,7 +51,7 @@ const GoogleMap = ({ apiKey, locations }: Props) => {
       const storedState = getObject<{
         zoom: number;
         center: { lat: number; lng: number };
-      }>(mapStateKey, { zoom: 4, center: { lat: 0, lng: 0 } });
+      }>(mapStateLocalStorageKey, { zoom: 4, center: { lat: 0, lng: 0 } });
 
       const mapInstance = new google.maps.Map(gmapELRef.current, {
         zoom: storedState.zoom,
@@ -112,7 +111,7 @@ const GoogleMap = ({ apiKey, locations }: Props) => {
 
   // store mapState in local storage
   React.useEffect(() => {
-    if (mapState) storeObject(mapState, mapStateKey);
+    if (mapState) storeObject(mapState, mapStateLocalStorageKey);
   }, [mapState]);
 
   // hide/show markers
