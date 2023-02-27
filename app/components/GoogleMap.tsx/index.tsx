@@ -6,10 +6,10 @@ import MapStatus from "./MapStatus";
 
 interface Props {
   apiKey: string;
-  locations: Array<Location>;
+  locations: Array<IPLocation>;
 }
 
-interface Location {
+interface IPLocation {
   latitude: number;
   longitude: number;
   city: string;
@@ -157,29 +157,52 @@ const GoogleMap = ({ apiKey, locations }: Props) => {
 
       {selectedLocations.length > 0 && (
         <div
-          style={{
-            height: "20%",
-            overflow: "scroll",
-            display: "flex",
-            flexDirection: "row",
-            flexWrap: "wrap",
-            alignItems: "baseline",
-            alignContent: "baseline",
-          }}
+          style={{ display: "flex", flexDirection: "column", height: "20%" }}
         >
-          {selectedLocations.map((location) => (
-            <p
-              key={location.id}
-              style={{ margin: 5, padding: 5, backgroundColor: "black" }}
+          <div
+            style={{
+              overflow: "scroll",
+              display: "flex",
+              flexDirection: "row",
+              flexWrap: "wrap",
+              alignItems: "baseline",
+              alignContent: "baseline",
+              flexGrow: 1,
+            }}
+          >
+            {selectedLocations.map((location) => (
+              <p
+                key={location.id}
+                style={{
+                  margin: 5,
+                  padding: 5,
+                  backgroundColor: "blue",
+                  borderRadius: 5,
+                }}
+              >
+                {location.city}
+                <span
+                  style={{ cursor: "pointer", marginLeft: 5 }}
+                  onClick={() => {
+                    setSelectedLocations((oldLocations) =>
+                      oldLocations.filter((loc) => loc !== location)
+                    );
+                  }}
+                >
+                  x
+                </span>
+              </p>
+            ))}
+          </div>
+          <div>
+            <button
               onClick={() => {
-                setSelectedLocations((oldLocations) =>
-                  oldLocations.filter((loc) => loc !== location)
-                );
+                console.log(selectedLocations.map((location) => location.id));
               }}
             >
-              {location.city}
-            </p>
-          ))}
+              Export
+            </button>
+          </div>
         </div>
       )}
     </div>

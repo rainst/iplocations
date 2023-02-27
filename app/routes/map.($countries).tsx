@@ -1,16 +1,21 @@
 import { useLoaderData } from "@remix-run/react";
 import { PrismaClient } from "@prisma/client";
+import type { LoaderArgs } from "@remix-run/node";
 
 import GoogleMap from "~/components/GoogleMap.tsx";
 
-export async function loader() {
+export async function loader(args: LoaderArgs) {
+  const countries = args.params.countries
+    ? args.params.countries.toUpperCase().split(",")
+    : undefined;
+
   const prisma = new PrismaClient();
 
   const locations = await prisma.location.findMany({
     select: { latitude: true, longitude: true, city: true, id: true },
     where: {
       countryCode: {
-        equals: "IT",
+        in: countries,
       },
     },
   });
