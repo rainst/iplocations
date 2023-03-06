@@ -4,9 +4,8 @@ body {
   font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
     "Lucida Sans", Arial, sans-serif, monospace;
   color: #c9d1d9;
-  /* background-color: #171724; */
   background-color: #0d1117;
-  /* font-size: xx-large; */
+  /* background-color: #171724; */
 }
 
 input {
@@ -24,4 +23,15 @@ a {
   text-decoration: none;
   color: burlywood;
   margin: 0 1rem;
+}
+
+.row {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+}
+
+.row.center {
+  justify-content: center;
 }

@@ -1,19 +1,15 @@
 import { Loader } from "@googlemaps/js-api-loader";
 import React from "react";
 
+import type { IPLocation } from "~/routes/map";
 import { getObject, storeObject } from "~/utils/localstorage";
 import MapStatus from "./MapStatus";
 
 interface Props {
   apiKey: string;
   locations: Array<IPLocation>;
-}
-
-interface IPLocation {
-  latitude: number;
-  longitude: number;
-  city: string;
-  id: number;
+  onSelectLocation: (newLocations: IPLocation) => void;
+  selectedLocations: Array<IPLocation>;
 }
 
 export interface MapState {
@@ -24,12 +20,14 @@ export interface MapState {
 
 const mapStateLocalStorageKey = "mapState";
 
-const GoogleMap = ({ apiKey, locations }: Props) => {
+const GoogleMap = ({
+  apiKey,
+  locations,
+  selectedLocations,
+  onSelectLocation,
+}: Props) => {
   const [mapState, setMapState] = React.useState<MapState>();
   const [initialised, setInitialised] = React.useState(false);
-  const [selectedLocations, setSelectedLocations] = React.useState<
-    typeof locations
-  >([]);
   const [markersVisible, setMarkersVisible] = React.useState(true);
 
   const mapInstanceRef = React.useRef<google.maps.Map | null>(null);
@@ -92,13 +90,7 @@ const GoogleMap = ({ apiKey, locations }: Props) => {
       });
 
       marker.addListener("click", () => {
-        if (marker.get("selected")) {
-          setSelectedLocations((oldLocations) =>
-            oldLocations.filter((loc) => loc !== location)
-          );
-        } else {
-          setSelectedLocations((oldLocations) => [...oldLocations, location]);
-        }
+        onSelectLocation(location);
       });
 
       markersMap.set(location.id, marker);
@@ -153,57 +145,6 @@ const GoogleMap = ({ apiKey, locations }: Props) => {
         markersVisible={markersVisible}
       />
       <div ref={gmapELRef} style={{ flexGrow: 1 }} />
-
-      {selectedLocations.length > 0 && (
-        <div
-          style={{ display: "flex", flexDirection: "column", height: "20%" }}
-        >
-          <div
-            style={{
-              overflow: "scroll",
-              display: "flex",
-              flexDirection: "row",
-              flexWrap: "wrap",
-              alignItems: "baseline",
-              alignContent: "baseline",
-              flexGrow: 1,
-            }}
-          >
-            {selectedLocations.map((location) => (
-              <p
-                key={location.id}
-                style={{
-                  margin: 5,
-                  padding: 5,
-                  backgroundColor: "blue",
-                  borderRadius: 5,
-                }}
-              >
-                {location.city}
-                <span
-                  style={{ cursor: "pointer", marginLeft: 5 }}
-                  onClick={() => {
-                    setSelectedLocations((oldLocations) =>
-                      oldLocations.filter((loc) => loc !== location)
-                    );
-                  }}
-                >
-                  x
-                </span>
-              </p>
-            ))}
-          </div>
-          <div>
-            <button
-              onClick={() => {
-                console.log(selectedLocations.map((location) => location.id));
-              }}
-            >
-              Export
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

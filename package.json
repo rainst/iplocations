@@ -5,7 +5,9 @@
     "build": "remix build",
     "dev": "remix dev",
     "start": "remix-serve build",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "db:apply": "prisma db push",
+    "db:view": "prisma studio"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.15.1",

@@ -1,5 +1,5 @@
 import { json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { Form, useLoaderData } from "@remix-run/react";
 import React from "react";
 import { PrismaClient } from "@prisma/client";
 
@@ -17,7 +17,7 @@ export const loader = async () => {
       countryCode: { not: "-" },
     },
     by: ["countryName", "countryCode"],
-    _count: { countryName: true },
+    _count: { countryName: true, rangeCount: true },
     orderBy: { countryName: "asc" },
   });
 
@@ -30,10 +30,6 @@ export default function Index() {
   >([]);
   const [textFilterValue, setTextFilterValue] = React.useState("");
   const countries = useLoaderData<typeof loader>();
-
-  React.useEffect(() => {
-    console.log(countries);
-  }, [countries]);
 
   const handleSelectCountry = (countryCode: string) => () => {
     if (selectedCountries.includes(countryCode)) {
@@ -56,18 +52,43 @@ export default function Index() {
   }, [textFilterValue, countries]);
 
   return (
-    <div>
-      <p>Select one or more countries to load</p>
-      <label htmlFor="filter">Filter country name</label>
-      <input
-        id="filter"
-        type="text"
-        onSubmit={() => console.log("submit")}
-        value={textFilterValue}
-        onChange={(e) => {
-          setTextFilterValue(e.target.value);
-        }}
-      />
+    <div style={{ padding: 10 }}>
+      <p style={{ marginBottom: 20 }}>
+        Select one or more countries to load on the map:
+      </p>
+      <div className="row center">
+        <input
+          id="filter"
+          type="text"
+          value={textFilterValue}
+          placeholder="Filter by name or country code"
+          onChange={(e) => {
+            setTextFilterValue(e.target.value);
+          }}
+        />
+      </div>
+      <Form action="/map">
+        <div className="row center" style={{ margin: "1rem 0" }}>
+          <input type="hidden" name="countries" value={selectedCountries} />
+          <p>{selectedCountries.length} countries selected</p>
+          <button
+            type="submit"
+            style={{
+              marginLeft: "1rem",
+            }}
+            disabled={selectedCountries.length === 0}
+          >
+            Load on map
+          </button>
+          <button
+            type="reset"
+            disabled={selectedCountries.length === 0}
+            onClick={() => setSelectedCountries([])}
+          >
+            Clear
+          </button>
+        </div>
+      </Form>
       {filteredCountries.length > 0 && (
         <div className="countries">
           {filteredCountries.map((country) => (
@@ -80,7 +101,8 @@ export default function Index() {
                   : "country"
               }
             >
-              {country.countryCode} - {country.countryName}
+              {country.countryCode} - {country.countryName} (
+              {country._count.rangeCount})
             </div>
           ))}
         </div>

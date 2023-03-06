@@ -15,5 +15,6 @@ model Location {
   countryName String
   region      String
   city        String
-  ranges      String
+  rangeCount  Int
+  ranges      String // serialised json array {ipStart, ipEnd}
 }
