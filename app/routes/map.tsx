@@ -1,24 +1,9 @@
 import React from "react";
 import { Form, useLoaderData } from "@remix-run/react";
-import { PrismaClient, type Prisma } from "@prisma/client";
 import { type LoaderArgs, redirect } from "@remix-run/node";
 
 import GoogleMap from "~/components/GoogleMap.tsx";
-
-export type IPLocation = Prisma.LocationGetPayload<{
-  select: {
-    latitude: true;
-    longitude: true;
-    city: true;
-    id: true;
-    rangeCount: true;
-  };
-  where: {
-    countryCode: {
-      in: "countries";
-    };
-  };
-}>;
+import { getIPLocations } from "~/utils/dbFunctions";
 
 export interface ServerData {
   googleMapsKey: string;
@@ -34,32 +19,14 @@ export async function loader(args: LoaderArgs) {
     ? countriesParam.toUpperCase()?.split(",")
     : undefined;
 
-  if (countries && countries.length > 0) {
-    const prismaClient = new PrismaClient();
-    const locations = await prismaClient.location.findMany({
-      select: {
-        latitude: true,
-        longitude: true,
-        city: true,
-        id: true,
-        rangeCount: true,
-      },
-      where: {
-        countryCode: {
-          in: countries,
-        },
-      },
-    });
+  const locations = await getIPLocations(countries);
 
-    if (locations.length === 0) return redirect("/");
+  if (locations.length === 0) return redirect("/");
 
-    return {
-      googleMapsKey: process.env.GOOGLE_MAPS_KEY ?? "",
-      locations,
-    };
-  }
-
-  return redirect("/");
+  return {
+    googleMapsKey: process.env.GOOGLE_MAPS_KEY ?? "",
+    locations,
+  };
 }
 
 export default function () {

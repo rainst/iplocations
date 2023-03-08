@@ -1,12 +1,10 @@
-import { PrismaClient } from "@prisma/client";
-import { ActionArgs } from "@remix-run/node";
-import { iprange2cidr } from "~/utils/ipFunction";
+import { type ActionArgs } from "@remix-run/node";
 
-const prisma = new PrismaClient();
+import { getFullLocations } from "~/utils/dbFunctions";
 
 export async function action({ request }: ActionArgs) {
   const body = await request.formData();
-  
+
   if (!body.get("locationIds")) {
     return new Response(null, {
       status: 200,
@@ -23,59 +21,18 @@ export async function action({ request }: ActionArgs) {
 
   const format = body.get("format") ?? "json";
 
-  const locations = await prisma.location.findMany({
-    where: {
-      id: { in: locationIds },
-    },
-  });
+  const locations = await getFullLocations(locationIds);
 
   let bodyResponse = "";
   let responseHeaders: ResponseInit["headers"] = {};
 
   if (format === "json") {
-    const exportLocations: Array<{
-      id: number;
-      latitude: number;
-      longitude: number;
-      countryCode: string;
-      countryName: string;
-      region: string;
-      city: string;
-      rangeCount: number;
-      cidrRanges: Array<string>;
-    }> = [];
+    responseHeaders = {
+      "Content-Type": "text/json;charset=UTF-8",
+      "Content-Disposition": 'attachment; filename="ranges.json"',
+    };
 
-    locations.forEach((location) => {
-      responseHeaders = {
-        "Content-Type": "json/application;charset=UTF-8",
-        "Content-Disposition": 'attachment; filename="ranges.json"',
-      };
-
-      const ranges = JSON.parse(location.ranges) as Array<string>;
-      const cidrRanges: Array<string> = [];
-
-      ranges.forEach((range) => {
-        const [startIP, endIP] = range.split("-");
-
-        iprange2cidr(startIP, endIP).forEach((cidrRange) => {
-          cidrRanges.push(cidrRange);
-        });
-      });
-
-      exportLocations.push({
-        id: location.id,
-        latitude: location.latitude,
-        longitude: location.longitude,
-        countryCode: location.countryCode,
-        countryName: location.countryName,
-        region: location.region,
-        city: location.city,
-        rangeCount: location.rangeCount,
-        cidrRanges,
-      });
-    });
-
-    bodyResponse = JSON.stringify(exportLocations, undefined, 2);
+    bodyResponse = JSON.stringify(locations, undefined, 2);
   }
 
   if (format === "list") {
@@ -84,24 +41,9 @@ export async function action({ request }: ActionArgs) {
       "Content-Disposition": 'attachment; filename="ranges.txt"',
     };
 
-    const exportRanges: Array<string> = [];
-
-    locations.forEach((location) => {
-      const ranges = JSON.parse(location.ranges) as Array<string>;
-      const cidrRanges: Array<string> = [];
-
-      ranges.forEach((range) => {
-        const [startIP, endIP] = range.split("-");
-
-        iprange2cidr(startIP, endIP).forEach((cidrRange) => {
-          cidrRanges.push(cidrRange);
-        });
-      });
-
-      exportRanges.push(...cidrRanges);
-    });
-
-    bodyResponse = exportRanges.join("\n");
+    bodyResponse = locations.reduce((acc, location) => {
+      return acc + location.ranges.join("\n");
+    }, "");
   }
 
   return new Response(bodyResponse, {

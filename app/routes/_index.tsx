@@ -1,25 +1,16 @@
 import { json } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 import React from "react";
-import { PrismaClient } from "@prisma/client";
 
 import styles from "~/css/countries.css";
+import { getCountrylist } from "~/utils/dbFunctions";
 
 export function links() {
   return [{ rel: "stylesheet", href: styles }];
 }
 
 export const loader = async () => {
-  const prisma = new PrismaClient();
-
-  const countries = await prisma.location.groupBy({
-    where: {
-      countryCode: { not: "-" },
-    },
-    by: ["countryName", "countryCode"],
-    _count: { countryName: true, rangeCount: true },
-    orderBy: { countryName: "asc" },
-  });
+  const countries = await getCountrylist();
 
   return json(countries);
 };
@@ -102,7 +93,7 @@ export default function Index() {
               }
             >
               {country.countryCode} - {country.countryName} (
-              {country._count.rangeCount})
+              {country.rangeCount})
             </div>
           ))}
         </div>
