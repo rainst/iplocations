@@ -4,6 +4,8 @@ Web UI to display on a map ip ranges obtained from IP2Locations.com
 
 Made with [Remix](https://remix.run)
 
+Hosted on [Netlify](https://iplocations.breincorporation.com) [![Netlify Status](https://api.netlify.com/api/v1/badges/5b71d238-1d22-4ab6-9c7e-82014ebb0bea/deploy-status)](https://app.netlify.com/sites/ip2location/deploys)
+
 ## Development
 
 From your terminal:

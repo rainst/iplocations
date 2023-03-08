@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import Database from "better-sqlite3";
+
 import { iprange2cidr } from "./ipFunction";
 
 const isProd = process.env.NODE_ENV === "production";
@@ -17,7 +18,7 @@ export async function getCountrylist(): Promise<Array<IPCountry>> {
               ORDER BY "main"."Location"."countryName" ASC LIMIT ? OFFSET ?`
     );
 
-    const res = query.all([null, null]) as Array<IPCountry>;
+    const res = query.all([-1, 0]) as Array<IPCountry>;
     return res;
   }
 
@@ -51,10 +52,12 @@ export async function getIPLocations(
     const query = db.prepare(
       `SELECT "main"."Location"."id", "main"."Location"."latitude", "main"."Location"."longitude", "main"."Location"."city", "main"."Location"."rangeCount"
       FROM "main"."Location"
-      WHERE "main"."Location"."countryCode" IN (?) LIMIT ? OFFSET ?`
+      WHERE "main"."Location"."countryCode" IN (${countries
+        .map((country) => `'${country}'`)
+        .join(", ")}) LIMIT ? OFFSET ?`
     );
 
-    const res = query.all([countries, null, null]) as Array<IPLocation>;
+    const res = query.all([-1, 0]) as Array<IPLocation>;
     return res;
   }
 
@@ -91,10 +94,12 @@ export async function getFullLocations(
     const query = db.prepare(
       `SELECT 'main'.'Location'.'id', 'main'.'Location'.'latitude', 'main'.'Location'.'longitude', 'main'.'Location'.'countryCode', 'main'.'Location'.'countryName', 'main'.'Location'.'region', 'main'.'Location'.'city', 'main'.'Location'.'rangeCount', 'main'.'Location'.'ranges'
       FROM 'main'.'Location'
-      WHERE 'main'.'Location'.'id' IN (?) LIMIT ? OFFSET ?`
+      WHERE 'main'.'Location'.'id' IN (${locationIds
+        .map((id) => `${id}`)
+        .join(", ")}) LIMIT ? OFFSET ?`
     );
 
-    rawLocations = query.all([locationIds, null, null]);
+    rawLocations = query.all([-1, 0]);
   } else {
     const prismaClient = getPrismaClient();
 
