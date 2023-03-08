@@ -7,6 +7,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
+
 import Nav from "./components/Nav";
 import styles from "./css/index.css";
 
@@ -14,6 +15,7 @@ export const meta: MetaFunction = () => ({
   charset: "utf-8",
   title: "IP Locations",
   viewport: "width=device-width,initial-scale=1",
+  description: "Display IP2locations IP ranges on a map and export them"
 });
 
 export const links = () => {
