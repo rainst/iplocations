@@ -3,10 +3,10 @@ import Database from "better-sqlite3";
 
 import { iprange2cidr } from "./ipFunction";
 
-const isProd = process.env.NODE_ENV === "production";
+const prismaAvailable = !!process.env.PRISMA_DB_URL;
 
 export async function getCountrylist(): Promise<Array<IPCountry>> {
-  if (isProd) {
+  if (prismaAvailable) {
     const db = getSqliteDatabase();
     const query = db.prepare(
       `SELECT
@@ -47,7 +47,7 @@ export async function getIPLocations(
 ): Promise<Array<IPLocation>> {
   if (!countries || countries.length === 0) return [];
 
-  if (isProd) {
+  if (prismaAvailable) {
     const db = getSqliteDatabase();
     const query = db.prepare(
       `SELECT "main"."Location"."id", "main"."Location"."latitude", "main"."Location"."longitude", "main"."Location"."city", "main"."Location"."rangeCount"
@@ -89,7 +89,7 @@ export async function getFullLocations(
 
   let rawLocations: Array<IPFullLocationRaw>;
 
-  if (isProd) {
+  if (prismaAvailable) {
     const db = getSqliteDatabase();
     const query = db.prepare(
       `SELECT 'main'.'Location'.'id', 'main'.'Location'.'latitude', 'main'.'Location'.'longitude', 'main'.'Location'.'countryCode', 'main'.'Location'.'countryName', 'main'.'Location'.'region', 'main'.'Location'.'city', 'main'.'Location'.'rangeCount', 'main'.'Location'.'ranges'
@@ -140,7 +140,7 @@ export async function getFullLocations(
 
 function getPrismaClient() {
   return new PrismaClient({
-    log: !isProd ? ["query"] : undefined,
+    log: process.env.NODE_ENV !== "production" ? ["query"] : undefined,
   });
 }
 
