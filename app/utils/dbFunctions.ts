@@ -139,7 +139,6 @@ export async function getFullLocations(
 }
 
 function getPrismaClient() {
-  console.log("using prisma", process.env.PRISMA_DB_URL);
   return new PrismaClient({
     log: process.env.NODE_ENV !== "production" ? ["query"] : undefined,
   });
