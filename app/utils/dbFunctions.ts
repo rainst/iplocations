@@ -6,7 +6,7 @@ import { iprange2cidr } from "./ipFunction";
 const prismaAvailable = !!process.env.PRISMA_DB_URL;
 
 export async function getCountrylist(): Promise<Array<IPCountry>> {
-  if (prismaAvailable) {
+  if (!prismaAvailable) {
     const db = getSqliteDatabase();
     const query = db.prepare(
       `SELECT
@@ -47,7 +47,7 @@ export async function getIPLocations(
 ): Promise<Array<IPLocation>> {
   if (!countries || countries.length === 0) return [];
 
-  if (prismaAvailable) {
+  if (!prismaAvailable) {
     const db = getSqliteDatabase();
     const query = db.prepare(
       `SELECT "main"."Location"."id", "main"."Location"."latitude", "main"."Location"."longitude", "main"."Location"."city", "main"."Location"."rangeCount"
@@ -89,7 +89,7 @@ export async function getFullLocations(
 
   let rawLocations: Array<IPFullLocationRaw>;
 
-  if (prismaAvailable) {
+  if (!prismaAvailable) {
     const db = getSqliteDatabase();
     const query = db.prepare(
       `SELECT 'main'.'Location'.'id', 'main'.'Location'.'latitude', 'main'.'Location'.'longitude', 'main'.'Location'.'countryCode', 'main'.'Location'.'countryName', 'main'.'Location'.'region', 'main'.'Location'.'city', 'main'.'Location'.'rangeCount', 'main'.'Location'.'ranges'
