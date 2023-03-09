@@ -1,6 +1,6 @@
 # IP Locations
 
-Web UI to display on a map ip ranges obtained from IP2Locations.com
+Web UI to display on a map ip ranges obtained from [https://lite.ip2location.com/](https://lite.ip2location.com/)
 
 Made with [Remix](https://remix.run)
 
